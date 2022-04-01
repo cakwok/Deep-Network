@@ -26,9 +26,9 @@ class NeuralNetwork(nn.Module):               #Question 1C, Build a neural netwo
         x = F.relu(F.max_pool2d(self.conv2_drop(self.conv2(x)), 2)) #A max pooling of dropout layer with a 2x2 window and a ReLU function applied
         x = x.view(-1, 320)                             #Fatten a tensor, since the input channel of previous layer is 320.
         x = F.relu(self.fc1(x))
-        x = F.dropout(x, training=self.training) #??? still need???
+        #x = F.dropout(x, training=self.training) #??? still need???
         x = self.fc2(x)
-        return F.log_softmax(x)
+        return F.log_softmax(x, dim=1)
 
 def train(epoch, network, train_loader, optimizer, log_interval, train_losses, train_counter):           #Question 1D, train the network
     network.train()
@@ -53,6 +53,8 @@ def test(network, test_loader, test_losses):                                    
     with torch.no_grad():
         for data, target in test_loader:
             output = network(data)
+            #print ("Ground Truth", target)
+            #print ("log_softmax(x)", output)
             test_loss += F.nll_loss(output, target, size_average=False).item()
             pred = output.data.max(1, keepdim=True)[1]
             correct += pred.eq(target.data.view_as(pred)).sum()
@@ -76,7 +78,7 @@ def main(argv):
 
     #------ Download Training and Testing Dataset.  * Mind the PATH here!
     train_loader = torch.utils.data.DataLoader(
-      torchvision.datasets.MNIST('./files/', train=True, download=False,    #download remarked False after downloaded once
+      torchvision.datasets.MNIST('./files/', train=False, download=False,    #download remarked False after downloaded once
       transform=torchvision.transforms.Compose([torchvision.transforms.ToTensor(),
       torchvision.transforms.Normalize((0.1307,), (0.3081,))])),            #0.1307, 0.3081 = Global mean, Global SD
       batch_size=batch_size_train, shuffle=False)
@@ -115,7 +117,7 @@ def main(argv):
     train_counter = []
     test_losses = []
     test_counter = [i*len(train_loader.dataset) for i in range(n_epochs + 1)]
-    test(NeuralNetwork1, test_loader, test_losses)
+    test(NeuralNetwork1, test_loader, test_losses)                                           #Run test once to see accuracy
 
     for epoch in range(1, n_epochs + 1):                                                     #Run training of network
         train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
