@@ -5,9 +5,13 @@ import matplotlib.pyplot as plt      #Plot Graph
 import torch.nn as nn                #Question 1F, Read the network and run it on the test set
 import torch.nn.functional as F      #Question 1C, Build a network
 import torch.optim as optim          #Question 1C, Build a network
-import CnnCoreStructure
-from CnnCoreStructure import *
+import Q1a_CnnCoreStructure
+from Q1a_CnnCoreStructure import *
 import numpy as np
+import os
+import cv2 as cv
+from PIL import Image
+import torchvision.transforms as transforms
 
 def train(epoch, network, train_loader, optimizer, log_interval, train_losses, train_counter):
     network.train()
@@ -31,8 +35,6 @@ def test(network, test_loader, test_losses):                                    
     with torch.no_grad():
         for data, target in test_loader:
             output = network(data)
-            #print ("Ground Truth", target)
-            #print ("log_softmax(x)", output)
             test_loss += F.nll_loss(output, target, size_average=False).item()
             pred = output.data.max(1, keepdim=True)[1]
             correct += pred.eq(target.data.view_as(pred)).sum()
@@ -43,6 +45,41 @@ def test(network, test_loader, test_losses):                                    
     print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset)))
     return network_output[0]
 
+def testMyHandwritting(network, HandwrittingImages_tensor, GroundTruth):                                          #Question 1G, test my handwritting
+    network.eval()
+    test_loss = 0
+    correct = 0
+    pred_list = []
+    i = 0
+    with torch.no_grad():
+        for data in HandwrittingImages_tensor:
+            output = network(data)
+            pred = output.data.max(1, keepdim=True)[1]
+            pred_list.append(pred)
+            if pred == GroundTruth[i]:
+                correct += 1
+            i += 1
+    print ("correctness", correct)
+    print ("pred_list", pred_list)
+    #print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset)))
+    return pred_list
+
+def LoadHandwrittingImages(folder):
+    HandwrittingImages = []
+    HandwrittingImages_tensor = []
+    GroundTruth = []
+    convert_tensor = transforms.ToTensor()
+    for filename in os.listdir(folder):
+        img = Image.open(os.path.join(folder,filename)) #!! using imread has caused image becomes 3 channels!!
+        #img = cv.cvtColor(img, cv.COLOR_BGR2RGB)
+        GroundTruth.append(filename[0])
+        if img is not None:
+            tensor = convert_tensor(img)
+            HandwrittingImages_tensor.append(tensor)
+            print ("tensor.size", tensor.size())
+            print ("filename", filename)
+            HandwrittingImages.append(img)
+    return GroundTruth, HandwrittingImages_tensor, HandwrittingImages
 
 def main(argv):
     n_epochs = 5                    #Epoch means run the network for 3 times(or num of loops here)
@@ -67,11 +104,14 @@ def main(argv):
 
     examples = enumerate(test_loader)
     batch_idx, (example_data, example_targets) = next(examples)
+    print("example_data, example_targets")
+    print(example_data, example_targets)
+    print ("tensor size", example_data.size())
 
     # -- Continue training from the state_dicts we saved during our first training run
 
     #initialize a new set of network and optimizers.
-    continued_network = CnnCoreStructure.NeuralNetwork()
+    continued_network = Q1a_CnnCoreStructure.NeuralNetwork()
     continued_optimizer = optim.SGD(continued_network.parameters(), lr=learning_rate,  momentum=momentum)
 
     #load the internal state of the network and optimizer when we last saved them.
@@ -103,8 +143,24 @@ def main(argv):
             plt.yticks([])
 
         print (str(list(np.around(np.array(output[i]), 2))) + "\t", str(example_targets[i].item()) + "\t", np.argmax(output[i]).item())
-
     plt.show()
+
+    #---------------------- Question 1G, recognise handwritting
+    GroundTruth, HandwrittingImages_tensor, HandwrittingImages = LoadHandwrittingImages("CascaHandWritting/formatted")
+
+    predict_list = testMyHandwritting(continued_network, HandwrittingImages_tensor, GroundTruth)
+
+    fig = plt.figure()
+    for i in range(len(HandwrittingImages)):
+        plt.subplot(3,4,i+1)
+        plt.tight_layout()
+        plt.imshow(HandwrittingImages[i], cmap='gray', interpolation='none')
+        plt.title("Prediction: {}".format((predict_list[i].item())))
+        plt.xticks([])
+        plt.yticks([])
+    plt.show()
+
+
 
     return
 
