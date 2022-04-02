@@ -27,6 +27,15 @@ class NeuralNetwork(nn.Module):               #Question 1C, Build a neural netwo
         x = self.fc2(x)
         return F.log_softmax(x, dim=1)
 
+class Submodel(NeuralNetwork):
+    def __init__(self):
+         NeuralNetwork.__init__(self)
+
+    def forward(self, x):
+        x = F.relu( F.max_pool2d( self.conv1(x), 2 ) )
+        #x = F.relu( F.max_pool2d( self.conv2_drop( self.conv2(x)), 2 ) )
+        return x
+
 def train(epoch, network, train_loader, optimizer, log_interval, train_losses, train_counter):
     network.train()
     for batch_idx, (data, target) in enumerate(train_loader):
@@ -61,12 +70,12 @@ def test(network, test_loader, test_losses):                                    
     print('\nTest set: Avg. loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(test_loss, correct, len(test_loader.dataset), 100. * correct / len(test_loader.dataset)))
     return network_output[0]
 
-def ShowConv1FilterEffect(network, train_loader):                                                     #Question 1D, test the network
+def trucate(network, test_loader):
+    network_output = []                                  #Question 1D, test the network
     network.eval()
     with torch.no_grad():
-        for i in range(9):
+        for data, target in test_loader:
             output = network(data)
-            img_f = cv.filter2D(data, -1, network.conv1.weight)
             network_output.append(output)
     return network_output[0]
 
@@ -101,15 +110,8 @@ def main(argv):
     # -- Continue training from the state_dicts we saved during our first training run
 
     #initialize a new set of network and optimizers.
+
     continued_network = NeuralNetwork()
-    continued_optimizer = optim.SGD(continued_network.parameters(), lr=learning_rate,  momentum=momentum)
-
-    #load the internal state of the network and optimizer when we last saved them.
-    network_state_dict = torch.load('./results/model.pth')
-    continued_network.load_state_dict(network_state_dict)
-
-    optimizer_state_dict = torch.load('./results/optimizer.pth')
-    continued_optimizer.load_state_dict(optimizer_state_dict)
 
     #----- Question 2A, print out weight and shape of the first layers
     print("continued_network")
@@ -153,6 +155,41 @@ def main(argv):
         plt.yticks([])
     plt.show()
 
+#----- Question 2c, build a truncated model
+
+    NeuralNetwork_truncated = Submodel()
+    print("NeuralNetwork_truncated")
+    print(NeuralNetwork_truncated)
+
+    continued_optimizer = optim.SGD(NeuralNetwork_truncated.parameters(), lr=learning_rate,  momentum=momentum)
+
+    #load the internal state of the network and optimizer when we last saved them.
+    network_state_dict = torch.load('./results/model.pth')
+    NeuralNetwork_truncated.load_state_dict(network_state_dict)
+
+    optimizer_state_dict = torch.load('./results/optimizer.pth')
+    continued_optimizer.load_state_dict(optimizer_state_dict)
+
+    NeuralNetwork_truncated_output = trucate(NeuralNetwork_truncated, test_loader)
+    print("NeuralNetwork_truncated_output")
+    print(NeuralNetwork_truncated_output.size())
+
+    fig = plt.figure()
+    j = 1
+    for i in range(10):
+        plt.subplot(5,4,j)
+        plt.tight_layout()
+        plt.imshow(NeuralNetwork_truncated.conv1.weight[i][0].detach().numpy(),cmap='gray', interpolation='none')
+        plt.xticks([])
+        plt.yticks([])
+        j += 1
+        plt.subplot(5,4,j)
+        img_f = cv.filter2D(first_training_data[0][0].detach().numpy(), -1, NeuralNetwork_truncated.conv1.weight[i][0].detach().numpy())
+        plt.imshow(img_f, cmap='gray', interpolation='none')
+        j += 1
+        plt.xticks([])
+        plt.yticks([])
+    plt.show()
 
     return
 
