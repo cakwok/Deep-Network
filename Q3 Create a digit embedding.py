@@ -17,7 +17,7 @@ def ConvertGreekImages(folder):
 
     f2 = open('GreekLabel.csv', 'w')
     f2.write('Greek Label \n')
-    
+
 
     for filename in os.listdir(folder):
 
@@ -103,6 +103,20 @@ def loadGreekSymbols():
 
     return GreekSymbolPixel, GreekSymbolLabel
 
+def ProjectGreekSymbols(network, HandwrittingImages_tensor, GroundTruth):                                          #Question 1G, test my handwritting
+
+    network.eval()
+    pred_list = []
+    elementVector = []
+
+    with torch.no_grad():
+        for data in HandwrittingImages_tensor:
+            output = network(data)
+            #pred = output.data.max(1, keepdim=True)[1]
+            #pred_list.append(pred)
+            elementVector.append(output)
+
+    return elementVector
 
 def main(argv):
 
@@ -126,6 +140,8 @@ def main(argv):
     print("showNNFirstDenseLayer_truncated_output")
     print(showNNFirstDenseLayer_truncated_output.size())
 
+    # ---- Question 1C, project geek symbols into the embedding space
+    # ---- read csv
     GreekSymbolPixel, GreekSymbolLabel = loadGreekSymbols()
     print (len(GreekSymbolPixel))
     print (type(GreekSymbolPixel[0]))
@@ -133,9 +149,21 @@ def main(argv):
     print (GreekSymbolPixel[1])
     print (GreekSymbolLabel)
 
-    GreekSymbolPixel_tensor = torch.FloatTensor(list(map(int, GreekSymbolPixel[0])))    #convert a list into tensor, convert a list of strings into list of integers
-    print (GreekSymbolPixel_tensor)
-    print (GreekSymbolPixel_tensor.size())
+    # ---- convert 1D list into tensor format
+    GreekSymbolPixel_tensor = []
+
+    for i in GreekSymbolPixel:
+        GreekSymbolPixel_tensor.append(torch.FloatTensor(list(map(int, i))).resize(1, 28,28))   #convert a list into tensor, convert a list of strings into list of integers
+    print (GreekSymbolPixel_tensor[0])
+    print (GreekSymbolPixel_tensor[0].size())
+
+    # ---- Get a set of 27 x 50 element vectors
+    elementVector = ProjectGreekSymbols(showNNFirstDenseLayer, GreekSymbolPixel_tensor, GreekSymbolLabel)
+    print ("elementVector")
+    print (elementVector[0])
+    print (len(elementVector), elementVector[0].size())
+
+
     return
 
 if __name__ == "__main__":
