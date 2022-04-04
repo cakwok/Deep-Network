@@ -7,6 +7,8 @@ from PIL import Image
 from Q1a_CnnCoreStructure import *
 import Q1a_CnnCoreStructure
 import csv
+from torch.nn.functional import normalize #to normalize a tensor
+
 
 #Question 3A Create a greek symbol dataset
 def ConvertGreekImages(folder):
@@ -103,7 +105,7 @@ def loadGreekSymbols():
 
     return GreekSymbolPixel, GreekSymbolLabel
 
-def ProjectGreekSymbols(network, HandwrittingImages_tensor, GroundTruth):                                          #Question 1G, test my handwritting
+def ProjectGreekSymbols(network, HandwrittingImages_tensor, GroundTruth):           #Question 1G, test my handwritting
 
     network.eval()
     pred_list = []
@@ -117,6 +119,25 @@ def ProjectGreekSymbols(network, HandwrittingImages_tensor, GroundTruth):       
             elementVector.append(output)
 
     return elementVector
+
+def print_ssd(GreekSymbolLabel, symbol, elementVector, label):
+    
+    ssd_list = []
+
+    for index, labels in enumerate(GreekSymbolLabel):
+        ssd = np.sum((np.array(symbol, dtype=np.float32) - np.array(elementVector[index], dtype=np.float32))**2)
+        ssd_list.append([GreekSymbolLabel[index], ssd])         #create a list of list
+
+    alpha_ssd_list_sorted = sorted(ssd_list,key=lambda l:l[0], reverse=False) #sort 2D array
+
+    print(label + " SSD with other symbols")
+
+    for items in alpha_ssd_list_sorted:
+        print(items[0], items[1])
+
+    print ("\n")
+    
+    return
 
 def main(argv):
 
@@ -153,7 +174,10 @@ def main(argv):
     GreekSymbolPixel_tensor = []
 
     for i in GreekSymbolPixel:
-        GreekSymbolPixel_tensor.append(torch.FloatTensor(list(map(int, i))).resize(1, 28,28))   #convert a list into tensor, convert a list of strings into list of integers
+        tensor = torch.FloatTensor(list(map(int, i))).resize(1, 28,28)       #convert a list into tensor, convert a list of strings into list of integers
+        norm = normalize(tensor, p=3.0)                                      #normalize a tensor
+        GreekSymbolPixel_tensor.append(norm)
+        #GreekSymbolPixel_tensor.append(torch.FloatTensor(list(map(int, i))).resize(1, 28,28))
     print (GreekSymbolPixel_tensor[0])
     print (GreekSymbolPixel_tensor[0].size())
 
@@ -163,7 +187,82 @@ def main(argv):
     print (elementVector[0])
     print (len(elementVector), elementVector[0].size())
 
+    # ---- Question 3D compute distances in the embedding space
+    alpha_elementVector = []
+    beta_elementVector = []
+    gamma_elementVector = []
+    alpha_ssd = []
+    beta_ssd = []
+    gamma_ssd = []
 
+    #Compute SSD between same letter
+    for index, labels in enumerate(GreekSymbolLabel):
+        if labels == "0":
+            if len(alpha_elementVector) != 0:
+                ssd = np.sum((np.array(alpha_elementVector, dtype=np.float32) - np.array(elementVector[index], dtype=np.float32))**2)
+                print (ssd)
+                alpha_ssd.append(ssd)
+            else:
+                alpha_elementVector = elementVector[index]
+        elif labels == "1":
+            if len(beta_elementVector) != 0:
+                ssd = np.sum((np.array(beta_elementVector, dtype=np.float32) - np.array(elementVector[index], dtype=np.float32))**2)
+                print (ssd)
+                beta_ssd.append(ssd)
+            else:
+                beta_elementVector = elementVector[index]
+        elif labels == "2":
+            if len(gamma_elementVector) != 0:
+                ssd = np.sum((np.array(gamma_elementVector, dtype=np.float32) - np.array(elementVector[index], dtype=np.float32))**2)
+                print (ssd)
+                gamma_ssd.append(ssd)
+            else:
+                gamma_elementVector = elementVector[index]
+
+    print("alpha_ssd")
+    print(alpha_ssd)
+
+    print("beta ssd")
+    print(beta_ssd)
+
+    print("gamma_ssd")
+    print(gamma_ssd)
+
+    #Compute SSD between different letter
+    print("Alpha SSD with other symbols")
+
+    ssd_list = []
+
+    #--- print out alpha ssd
+    '''
+    for index, labels in enumerate(GreekSymbolLabel):
+        ssd = np.sum((np.array(alpha_elementVector, dtype=np.float32) - np.array(elementVector[index], dtype=np.float32))**2)
+        ssd_list.append([GreekSymbolLabel[index], ssd])         #create a list of list
+
+    alpha_ssd_list_sorted = sorted(ssd_list,key=lambda l:l[0], reverse=False) #sort 2D array
+
+    print("Alpha SSD with other symbols")
+
+    for items in alpha_ssd_list_sorted:
+        print(items[0], items[1])
+    '''
+    print_ssd(GreekSymbolLabel, alpha_elementVector, elementVector, "alpha")
+    print_ssd(GreekSymbolLabel, beta_elementVector, elementVector, "beta")
+
+    #--- print out beta ssd
+    '''
+    ssd_list = []
+    for index, labels in enumerate(GreekSymbolLabel):
+        ssd = np.sum((np.array(beta_elementVector, dtype=np.float32) - np.array(elementVector[index], dtype=np.float32))**2)
+        ssd_list.append([GreekSymbolLabel[index], ssd])         #create a list of list
+
+    beta_ssd_list_sorted = sorted(ssd_list,key=lambda l:l[0], reverse=False) #sort 2D array
+
+    print("Beta SSD with other symbols")
+
+    for items in beta_ssd_list_sorted:
+        print(items[0], items[1])
+    '''
     return
 
 if __name__ == "__main__":
