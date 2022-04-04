@@ -121,7 +121,7 @@ def ProjectGreekSymbols(network, HandwrittingImages_tensor, GroundTruth):       
     return elementVector
 
 def print_ssd(GreekSymbolLabel, symbol, elementVector, label):
-    
+
     ssd_list = []
 
     for index, labels in enumerate(GreekSymbolLabel):
@@ -136,7 +136,7 @@ def print_ssd(GreekSymbolLabel, symbol, elementVector, label):
         print(items[0], items[1])
 
     print ("\n")
-    
+
     return
 
 def main(argv):
@@ -231,38 +231,12 @@ def main(argv):
     #Compute SSD between different letter
     print("Alpha SSD with other symbols")
 
-    ssd_list = []
+    #--- print out ssd
 
-    #--- print out alpha ssd
-    '''
-    for index, labels in enumerate(GreekSymbolLabel):
-        ssd = np.sum((np.array(alpha_elementVector, dtype=np.float32) - np.array(elementVector[index], dtype=np.float32))**2)
-        ssd_list.append([GreekSymbolLabel[index], ssd])         #create a list of list
+    print_ssd(GreekSymbolLabel, alpha_elementVector, elementVector, "Alpha")
+    print_ssd(GreekSymbolLabel, beta_elementVector, elementVector, "Beta")
+    print_ssd(GreekSymbolLabel, gamma_elementVector, elementVector, "Gamma")
 
-    alpha_ssd_list_sorted = sorted(ssd_list,key=lambda l:l[0], reverse=False) #sort 2D array
-
-    print("Alpha SSD with other symbols")
-
-    for items in alpha_ssd_list_sorted:
-        print(items[0], items[1])
-    '''
-    print_ssd(GreekSymbolLabel, alpha_elementVector, elementVector, "alpha")
-    print_ssd(GreekSymbolLabel, beta_elementVector, elementVector, "beta")
-
-    #--- print out beta ssd
-    '''
-    ssd_list = []
-    for index, labels in enumerate(GreekSymbolLabel):
-        ssd = np.sum((np.array(beta_elementVector, dtype=np.float32) - np.array(elementVector[index], dtype=np.float32))**2)
-        ssd_list.append([GreekSymbolLabel[index], ssd])         #create a list of list
-
-    beta_ssd_list_sorted = sorted(ssd_list,key=lambda l:l[0], reverse=False) #sort 2D array
-
-    print("Beta SSD with other symbols")
-
-    for items in beta_ssd_list_sorted:
-        print(items[0], items[1])
-    '''
     return
 
 if __name__ == "__main__":
