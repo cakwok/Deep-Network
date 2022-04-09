@@ -99,7 +99,7 @@ def LoadHandwrittingImages(folder):
             HandwrittingImages.append(img)
     return GroundTruth, HandwrittingImages_tensor, HandwrittingImages
 
-def GetEpochErrorList(NeuralNetworkX, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs):
+def GetEpochErrorList(NeuralNetworkX, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs, HandwrittingImages_tensor, GroundTruth):
 
     optimizer = optim.SGD(NeuralNetworkX.parameters(), lr = learning_rate, momentum = momentum)
 
@@ -109,7 +109,7 @@ def GetEpochErrorList(NeuralNetworkX, learning_rate, momentum, test_loader, trai
         train(epoch, NeuralNetworkX, train_loader, optimizer, log_interval, train_losses, train_counter)
         #test(NeuralNetwork1, test_loader, test_losses)
 
-    error_rate, predict_list = testMyHandwritting(NeuralNetwork2, HandwrittingImages_tensor, GroundTruth)
+    error_rate, predict_list = testMyHandwritting(NeuralNetworkX, HandwrittingImages_tensor, GroundTruth)
 
     return NeuralNetworkX, error_rate
 
@@ -186,30 +186,56 @@ def main(argv):
     #---- get data for different batch size to plot error rate v/s batch size
     print("Create second NeuralNetwork2")
 
-    n_epochs = 100
+    n_epochs = 60
+
     NeuralNetwork2 = NeuralNetwork()             #Initialize Neural Networks
-    NeuralNetwork2, error_rate = GetEpochErrorList(NeuralNetwork2, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs)
+    NeuralNetwork2, error_rate = GetEpochErrorList(NeuralNetwork2, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs, HandwrittingImages_tensor, GroundTruth)
 
-    '''
-    optimizer = optim.SGD(NeuralNetwork2.parameters(), lr=learning_rate, momentum=momentum)
-
-    test(NeuralNetwork2, test_loader, test_losses)
-
-    n_epochs = 100
-
-    for epoch in range(1, n_epochs + 1):                                                     #Run training of network
-        train(epoch, NeuralNetwork2, train_loader, optimizer, log_interval, train_losses, train_counter)
-        #test(NeuralNetwork1, test_loader, test_losses)
-
-    epoch_list.append(epoch)
-
-    error_rate, predict_list = testMyHandwritting(NeuralNetwork2, HandwrittingImages_tensor, GroundTruth)
-
+    epoch_list.append(n_epochs)
     error_list.append(error_rate)
-    '''
+
+    print("Create second NeuralNetwork3")
+
+    n_epochs = 110
+
+    NeuralNetwork3 = NeuralNetwork()             #Initialize Neural Networks
+    NeuralNetwork3, error_rate = GetEpochErrorList(NeuralNetwork3, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs, HandwrittingImages_tensor, GroundTruth)
+
+    epoch_list.append(n_epochs)
+    error_list.append(error_rate)
+
+
+    print("Create second NeuralNetwork4")
+
+    n_epochs = 160
+
+    NeuralNetwork4 = NeuralNetwork()             #Initialize Neural Networks
+    NeuralNetwork4, error_rate = GetEpochErrorList(NeuralNetwork4, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs, HandwrittingImages_tensor, GroundTruth)
+
+    epoch_list.append(n_epochs)
+    error_list.append(error_rate)
+
+
+    print("Create second NeuralNetwork2")
+
+    n_epochs = 210
+
+    NeuralNetwork5 = NeuralNetwork()             #Initialize Neural Networks
+    NeuralNetwork5, error_rate = GetEpochErrorList(NeuralNetwork5, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs, HandwrittingImages_tensor, GroundTruth)
+
+    epoch_list.append(n_epochs)
+    error_list.append(error_rate)
+
 
     print("epoch_list", epoch_list)
     print("error_rate_list", error_list)
+
+    fig = plt.figure()
+    plt.plot(epoch_list, error_list)
+    plt.title("Performance of number of Epoches against accuracy over time")
+    plt.xlabel('Number of Epoches')
+    plt.ylabel('Accuracy')
+    plt.show()
 
     return
 
