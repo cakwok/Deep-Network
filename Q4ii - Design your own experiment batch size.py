@@ -183,55 +183,21 @@ def main(argv):
         plt.yticks([])
     plt.show()
 
-    batch_size_train =  128
+    for i in range (128, 448, 64):
 
-    for epoch in range(1, n_epochs + 1):                                                     #Run training of network
-        train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
+        batch_size_train =  i
 
-    print("batch_size_train", batch_size_train)
+        for epoch in range(1, n_epochs + 1):                                                     #Run training of network
+            train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
 
-    error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
-    error_list.append(error_rate)
+        print("batch_size_train", batch_size_train)
 
-    batch_size_train = 192
+        error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
+        #error_list.append(error_rate)
 
-    for epoch in range(1, n_epochs + 1):                                                     #Run training of network
-        train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
-
-    print("batch_size_train", batch_size_train)
-
-    error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
-    error_list.append(error_rate)
-
-    batch_size_train = 256
-
-    for epoch in range(1, n_epochs + 1):                                                     #Run training of network
-        train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
-
-    print("batch_size_train", batch_size_train)
-    error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
-    error_list.append(error_rate)
-
-    batch_size_train = 320
-
-    for epoch in range(1, n_epochs + 1):                                                     #Run training of network
-        train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
-
-    print("batch_size_train", batch_size_train)
-    error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
-    error_list.append(error_rate)
-
-    batch_size_train = 384
-
-    for epoch in range(1, n_epochs + 1):                                                     #Run training of network
-        train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
-
-    print("batch_size_train", batch_size_train)
-    error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
-    error_list.append(error_rate)
+        print("error_rate", error_rate)
 
     return
 
 if __name__ == "__main__":
     main(sys.argv)
-
