@@ -103,7 +103,7 @@ def GetEpochErrorList(NeuralNetworkX, learning_rate, momentum, test_loader, trai
 
     optimizer = optim.SGD(NeuralNetworkX.parameters(), lr = learning_rate, momentum = momentum)
 
-    test(NeuralNetworkX, test_loader, test_losses)
+    #test(NeuralNetworkX, test_loader, test_losses)
 
     for epoch in range(1, n_epochs + 1):                                                     #Run training of network
         train(epoch, NeuralNetworkX, train_loader, optimizer, log_interval, train_losses, train_counter)
@@ -114,8 +114,8 @@ def GetEpochErrorList(NeuralNetworkX, learning_rate, momentum, test_loader, trai
     return NeuralNetworkX, error_rate
 
 def main(argv):
-    n_epochs = 10                   #Epoch means run the network for 3 times(or num of loops here)
-    batch_size_train = 640           #Num of training examples in 1 batch
+    n_epochs = 5                   #Epoch means run the network for 3 times(or num of loops here)
+    batch_size_train = 64           #Num of training examples in 1 batch
     batch_size_test = 1000          #Num of testing examples in 1 batch
     learning_rate = 0.01            #How much to shift in each gradient descent
     momentum = 0.5
@@ -167,8 +167,8 @@ def main(argv):
     print ("GroundTruth")
     print (GroundTruth)
 
+    print("n_epochs", n_epochs)
     error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
-
     error_list.append(error_rate)
 
     #---- plot handwritting recognistion for the first batch size of training
@@ -183,10 +183,41 @@ def main(argv):
         plt.yticks([])
     plt.show()
 
+    n_epochs = 10
+
+    for epoch in range(1, n_epochs + 1):                                                     #Run training of network
+        train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
+
+    print("n_epochs", n_epochs)
+
+    error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
+    error_list.append(error_rate)
+
+    n_epochs = 15
+
+    for epoch in range(1, n_epochs + 1):                                                     #Run training of network
+        train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
+
+    print("n_epochs", n_epochs)
+
+    error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
+    error_list.append(error_rate)
+
+    n_epochs = 30
+
+    for epoch in range(1, n_epochs + 1):                                                     #Run training of network
+        train(epoch, NeuralNetwork1, train_loader, optimizer, log_interval, train_losses, train_counter)
+
+    print("n_epochs", n_epochs)
+    error_rate, predict_list = testMyHandwritting(NeuralNetwork1, HandwrittingImages_tensor, GroundTruth)
+    error_list.append(error_rate)
+
+
+    '''
     #---- get data for different batch size to plot error rate v/s batch size
     print("Create second NeuralNetwork2")
 
-    n_epochs = 60
+    n_epochs = 10
 
     NeuralNetwork2 = NeuralNetwork()             #Initialize Neural Networks
     NeuralNetwork2, error_rate = GetEpochErrorList(NeuralNetwork2, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs, HandwrittingImages_tensor, GroundTruth)
@@ -196,7 +227,8 @@ def main(argv):
 
     print("Create second NeuralNetwork3")
 
-    n_epochs = 110
+
+    n_epochs = 15
 
     NeuralNetwork3 = NeuralNetwork()             #Initialize Neural Networks
     NeuralNetwork3, error_rate = GetEpochErrorList(NeuralNetwork3, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs, HandwrittingImages_tensor, GroundTruth)
@@ -207,7 +239,7 @@ def main(argv):
 
     print("Create second NeuralNetwork4")
 
-    n_epochs = 160
+    n_epochs = 20
 
     NeuralNetwork4 = NeuralNetwork()             #Initialize Neural Networks
     NeuralNetwork4, error_rate = GetEpochErrorList(NeuralNetwork4, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs, HandwrittingImages_tensor, GroundTruth)
@@ -216,9 +248,9 @@ def main(argv):
     error_list.append(error_rate)
 
 
-    print("Create second NeuralNetwork2")
+    print("Create second NeuralNetwork5")
 
-    n_epochs = 210
+    n_epochs = 25
 
     NeuralNetwork5 = NeuralNetwork()             #Initialize Neural Networks
     NeuralNetwork5, error_rate = GetEpochErrorList(NeuralNetwork5, learning_rate, momentum, test_loader, train_loader, log_interval, train_losses, train_counter, test_losses, n_epochs, HandwrittingImages_tensor, GroundTruth)
@@ -236,6 +268,11 @@ def main(argv):
     plt.xlabel('Number of Epoches')
     plt.ylabel('Accuracy')
     plt.show()
+
+    print("Create second NeuralNetwork6")
+
+    '''
+
 
     return
 
