@@ -23,10 +23,11 @@ Operation System
 ----------------
 macOS 11.5.1, xcode, macOS terminal
 
-Video link for extension 1 & 2
+Video link
 ------------------------------
 nil
 
 
-
-
+Travel Day Used
+---------------
+2 days
