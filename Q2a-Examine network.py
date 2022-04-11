@@ -33,7 +33,7 @@ class Submodel(NeuralNetwork):
 
     def forward(self, x):
         x = F.relu( F.max_pool2d( self.conv1(x), 2 ) )
-        #x = F.relu( F.max_pool2d( self.conv2_drop( self.conv2(x)), 2 ) )
+        x = F.relu( F.max_pool2d( self.conv2_drop( self.conv2(x)), 2 ) )
         return x
 
 def train(epoch, network, train_loader, optimizer, log_interval, train_losses, train_counter):
@@ -71,7 +71,7 @@ def test(network, test_loader, test_losses):                                    
     return network_output[0]
 
 def trucate(network, test_loader):
-    network_output = []                                  #Question 1D, test the network
+    network_output = []
     network.eval()
     with torch.no_grad():
         for data, target in test_loader:
@@ -155,7 +155,7 @@ def main(argv):
         plt.yticks([])
     plt.show()
 
-#----- Question 2c, build a truncated model
+    #----- Question 2c, build a truncated model
 
     NeuralNetwork_truncated = Submodel()
     print("NeuralNetwork_truncated")
@@ -179,12 +179,12 @@ def main(argv):
     for i in range(10):
         plt.subplot(5,4,j)
         plt.tight_layout()
-        plt.imshow(NeuralNetwork_truncated.conv1.weight[i][0].detach().numpy(),cmap='gray', interpolation='none')
+        plt.imshow(NeuralNetwork_truncated.conv2.weight[i][0].detach().numpy(),cmap='gray', interpolation='none')
         plt.xticks([])
         plt.yticks([])
         j += 1
         plt.subplot(5,4,j)
-        img_f = cv.filter2D(first_training_data[0][0].detach().numpy(), -1, NeuralNetwork_truncated.conv1.weight[i][0].detach().numpy())
+        img_f = cv.filter2D(first_training_data[0][0].detach().numpy(), -1, NeuralNetwork_truncated.conv2.weight[i][0].detach().numpy())
         plt.imshow(img_f, cmap='gray', interpolation='none')
         j += 1
         plt.xticks([])
