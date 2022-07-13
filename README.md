@@ -41,29 +41,27 @@ Test set: Avg. loss: 0.0929, Accuracy: 9701/10000 (97%)
 Test set: Avg. loss: 0.0786, Accuracy: 9754/10000 (98%)
 ```
 
-The system is able to classify all 10 examples correctly.
+The system is able to classify all 10 examples correctly after training.
 
 <img src = "https://user-images.githubusercontent.com/21034990/177020029-8ffe6900-d00a-4c49-afb5-23c699d0652e.png" width = 400>
 
-Now after training, i fed my own handwritings to see how well the system predict.  
+Now, time to see if machine can tell the meaning of my handwrittings.  I fed my own handwritings to see how well the system predict/classify.  
 
 The challenge to the machine is, my own handwritting images were scaled down from 1k to 28x28, so despite it was written fairly thick at a whiteboard, the scaled down images are still not as strong in intensity as the MNIST dataset.
 
-So the result is around 60% accuracy, but we will see it could be fixed in later part.
+So the result of prediction can just achieve 60% accuracy, but we will see later on it could be fixed.
 
 <img src = "https://user-images.githubusercontent.com/21034990/177020056-a88ca893-9d17-4ab5-b7df-ad99cf590942.png" width = 400>
 
-Examine network and analysis the first layer
+Neural network is well known as black boxes.  Below I am trying to examine convolutional network and analysis the first convolutional layer
 
 <img src = "https://user-images.githubusercontent.com/21034990/177020072-10b6dbf9-f0a9-496c-bba3-73c386a161a4.png" width = 400>
 
-The below output show the plot of the 10 filtered images.  Given the filters, i can't interpret all, but at the 5th filters (from left to right), it looks like ridge detection as the surrounding are all big negatives.
+By observing the filters, it looks like the 5th filters (from left to right) is ridge detection as the boundary filters are all big negatives in value (black).
 
 <img src = "https://user-images.githubusercontent.com/21034990/177020089-9992e96c-71d5-4d92-9b80-3900813899e2.png" width = 400>
 
-Build a truncated model
-
-Below capture shows the output after second layer.  I cannot notice patterns, the sixth picture look a bit like sobel y filter.
+To observe the second convolutional layer, I have built a truncated model.  The sixth picture looks like sobel y filter.
 
 <img src = "https://user-images.githubusercontent.com/21034990/177020099-71c2df2a-5189-407a-ae87-1907d8aff43b.png" width = 400>
 
@@ -72,5 +70,4 @@ Create your own greek symbol data
 With my own Greek symbol, the predictions is about 2/3 correctness.
 
 <img src = "https://user-images.githubusercontent.com/21034990/177020106-0deaa1c8-377d-4a21-bfd6-a938903f4b23.png" width = 400>
-
 
