@@ -80,5 +80,6 @@ With my own Greek symbol, the predictions is about 2/3 correctness.
 
 And run with this total 6 x 6 x 2(with batchnormal or with dropout) 72 variations/combinations.  The best parameters experimented, was 15 epochs or 256 as the batch size.
 
- ![image](https://user-images.githubusercontent.com/21034990/179029073-98012bda-eda3-4578-b027-b7a7ba5b17c7.png)
+Now, all digits are classified correctly.
+<img src = "https://user-images.githubusercontent.com/21034990/179029073-98012bda-eda3-4578-b027-b7a7ba5b17c7.png"  width = 400)
 
