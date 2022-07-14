@@ -19,7 +19,7 @@ Q4iii       Q4iii - Design your own experiment batch normalization.py<br>
 
 Detail report
 -------------
-1. We have to provide data for machine to learn.  Below capture shows the MNIST digit dataset to be fed into the neural network
+1. We have to provide data for machine to learn.  Below capture shows the MNIST digit dataset fed into the neural network
 
 <img src = "https://user-images.githubusercontent.com/21034990/177019922-2f674cf3-daf6-44cd-9e23-1e7fea3aa37c.png" width = 400>
 
