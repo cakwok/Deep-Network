@@ -4,7 +4,7 @@ In this project, I trained my machine to learn what are numbers and greek letter
 By feeding MNIST Digits dataset and let the machine learn what are digits and letters, the model is then able to recognise my own arabic numbers and greek letter handwrittings after this training.<br><br>
 The above process is good to see if the model is working.  However, the model could perform much better accuracy with tunning.  Therefore, in the second part of the project, I would be showing performance analysis of the model, and result of much better accuracy after tunning.
 
-The left hand side of the below capture shows my handwrittings raw.  At right upper corner, we can see the from the value of "prediction", which shows what machine has learnt and able to tell the digits of my handwritting.  We can see generally, it learnt well before tunning.  Some numbers are misclassified though, but still a close prediction with alike features.
+The left hand side of the below capture shows my handwrittings raw.  At right upper corner, we can see the from the value of "prediction", which shows what machine has learnt and able to tell the digits of my handwritting.  We can see generally, it learnt well before tunning, 7 out of 10 writtings were classified correctly, so 70% accuracy.  Having said that, for those numbers which are misclassified, they are still a close prediction with alike features.
 ![image](https://user-images.githubusercontent.com/21034990/176381947-5a45a6b7-511a-4099-8e65-5be10de0ca08.png)
 
 Main codes 
@@ -70,4 +70,14 @@ Create your own greek symbol data
 With my own Greek symbol, the predictions is about 2/3 correctness.
 
 <img src = "https://user-images.githubusercontent.com/21034990/177020106-0deaa1c8-377d-4a21-bfd6-a938903f4b23.png" width = 400>
+
+
+Now to get a better prediction performance, I have experimented tuning hyper parameters with 
+- different number of epochs(5, 10, 15, 20, 25, 30) 
+- batch sizes 64, 128, 192, 256, 320, 384
+- replaced 2 dropout layers with 2 batch normalisation layers
+
+And run with this total 6 x 6 x 2(with batchnormal or with dropout) 72 variations/combinations.  The best parameters experimented, was 15 epochs or 256 as the batch size.
+
+ ![image](https://user-images.githubusercontent.com/21034990/179029073-98012bda-eda3-4578-b027-b7a7ba5b17c7.png)
 
